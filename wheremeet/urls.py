@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from wheremeet.views import main, save_coordinate, wheremeet_result
 
+app_name = "wheremeet"
 urlpatterns = [
     path('wheremeet/<int:group_pk>/', main, name='main'),
     path('save-coordinate/', save_coordinate, name='save-coordinate'), 

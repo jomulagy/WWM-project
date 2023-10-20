@@ -18,7 +18,7 @@
                 <!-- user n 파트를 데이터 내 사용자명으로 받아오는 방법!! -->
                 <div id="group">
                     {% for user in user_list %}
-                    <span class="user">{{ user.name }}</span>
+                    <span class="user">{{ user.last_name}}{{ user.first_name }}</span>
                     {% endfor %}
                     <!-- <span id="user">{{ user.name }}</span>
                     <span id="user">{{ user.name }}</span>
@@ -34,12 +34,7 @@
     <p>{{user_results}}</p>
     <div id="text">
         <!-- count 파트 => 데이터  -->
-        <span id="first_text">최대 인원 </span>
-        <span id="count">{{user_count}}명</span>
-        <span>이 만날 수 있는 중간 지점은 </span>
-        <span id="middle_place">{{station}}</span>
-        <span>입니다.</span>
-        <button type="button" id="result">결과 보기</button>
+        <span id="first_text">최대 인원 {{user_count}}명이 만날 수 있는 중간 지점은 {{station}}입니다.</span>
     </div>
 </div>
 <div class="modal_wrap">
@@ -95,7 +90,7 @@
      var user_results = {{user_coors | safe}};
      console.log(user_results)
      console.log(user_results[0]['name'])
-     console.log(new kakao.maps.LatLng(user_results[0]['longitude'], user_results[1]['latitude']))
+     console.log(new kakao.maps.LatLng(user_results[0]['longitude'], user_results[0]['latitude']))
     for (var i = 0; i < user_results.length; i++) {
         // 마커 이미지의 이미지 크기 입니다
         var imageSize = new kakao.maps.Size(24, 35);

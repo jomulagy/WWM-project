@@ -1,12 +1,13 @@
 from contextlib import redirect_stderr
 from django.shortcuts import render
 from django.utils.dateformat import DateFormat
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from wwmgroup.models import WwmGroup
 from accounts.models import User
 from datetime import timedelta, datetime
 import json
+from .models import Timetable
 
 def post_group_timetable(request,pk):
     if request.method == 'GET':
@@ -39,25 +40,21 @@ def post_group_timetable(request,pk):
         return render(request,'whenmeet/index.html',context)
 # 1-2. 개인타임 테이블 뿌리는 view -> 시작일을 name = startdate 로 받아야됨
 def post_personal_timetable(request):
-    user = User.objects.get(id = request.user.id)
-    startdate = DateFormat(datetime.now()).format('Y-m-d')
-    enddate = DateFormat(datetime.now()+timedelta(days=6)).format('Y-m-d')
+    user = request.user
     
-    days = ['월','화','수','목','금','토','일']
-    date = []
-    day_count = 7
-    for single_date in (datetime.now() + timedelta(n) for n in range(day_count)):
-        date.append(days[get_weekday(single_date)])
-    
-    start = get_weekday(datetime.now())
-    timetable = user.avaliablity_days_time[24*start:]+user.avaliablity_days_time[0:24*start]
-    
+    weekdays = ['월','화','수','목','금','토','일']
+    if not user.timetable_set.all().exists():
+            for weekday in weekdays:
+                new = Timetable(user = request.user,day = weekday,schedule = "0"*24)
+                new.save()
+    res = {}
+    for weekday in weekdays:
+        res[weekday]=list(user.timetable_set.get(day = weekday).schedule)
+        print(res[weekday])
 
+    print(res)
     context = {
-            'timetable' : timetable, #string 형으로 반환
-            'startdate' : startdate,
-            'enddate' : enddate,
-            'date' : date,
+            'timetable' : res,
     }
 
     return render(request,'whenmeet/mytimetable.html',context)
@@ -67,61 +64,63 @@ def post_personal_timetable(request):
 # - 유저의 avaliablity_days_time을 24씩 분리해서 wwmGroup의 시작요일과 매칭해서 24시간씩 비교 
 def create_group_timetable(group_id,start_date,end_date):
     timetable = []
-    start = get_weekday(start_date)
-    end = get_weekday(end_date)
-    day_count = (end_date - start_date).days + 1
-
+    cur_date = start_date
+    print(type(cur_date))
     group = WwmGroup.objects.get(id = group_id)
-    users_timetables = [[user.name,user.avaliablity_days_time] for user in group.user.all()]
-    users = [data[0] for data in users_timetables]
-    availity_times = [data[1] for data in users_timetables]
-    timetables = []
-    for availity_time in availity_times:
-        formatted_time = ''
-        for i in range(start,start+day_count):
-            if (i+1)%7==0:
-                formatted_time += availity_time[24*(i%7):]
 
-            else:
-                formatted_time += availity_time[24*(i%7):24*((i+1)%7)]
-        timetables.append(formatted_time)
-    binds = list(map(list,zip(*timetables)))
-    for bind in binds:
-        timetable.append([users[i] for i in range(len(bind)) if bind[i]=='1'])
-    return timetable
+    members = group.user.all()
+    print(members)
+    timetables = []
+    while cur_date <= end_date:
+        timetable = [[] for i in range(24)]
+        for member in members:
+            schedule = member.timetable_set.get(day = get_weekday(cur_date)).schedule
+            schedule = list(map(int,list(schedule)))
+
+            for i in range(24):
+                if schedule[i]:
+                    timetable[i].append(member.last_name+member.first_name)
+            print(timetable)
+        for sche in timetable:
+            timetables.append(sche)
+        cur_date += timedelta(days=1)
+    print(timetables)
+    return timetables
 
 @csrf_exempt
 def edit_personal_timetable(request):
+    weekdays = ['월', '화', '수', '목', '금', '토', '일']
 
     if request.method == 'POST':
-        today = get_weekday(datetime.now())
-        today = -1*(today)
-        user = User.objects.get(id = request.user.id)
-        #user = User.objects.get(id = '1')#테스트용 지워야됨
-        data = request.POST.get('timetable')
-        print(data)
-        data = data[24*today:]+data[0:24*today]
-        user.avaliablity_days_time = data
-        user.save()
-        
-        return HttpResponse()
+        user = request.user
+        req = json.loads(request.body)
+        for weekday in weekdays:
+            data = user.timetable_set.get(day = weekday)
+            data.schedule = "".join(req[weekday])
+            data.save()
+
+        return JsonResponse(status = 200,data = {})
+    else:
+        return JsonResponse(status=405,data={"message":"Method Not Allowed"})
+
 
 # 2-2. 시작 요일 구하는 view
 # - 숫자 return 0(월), 1(화), 2(수) …  
 # [python에서 datetime  불러와서 요일 구하는 로직] : https://ddolcat.tistory.com/688
 def get_weekday(date):
-    return date.weekday()
+    weekdays = ['월', '화', '수', '목', '금', '토', '일']
+    return weekdays[date.weekday()]
 
 
 
 def get_result(timetable,count):
-    min_len = count
+    max_len = 0
     result = []
     for i in range(len(timetable)):
-        if(min_len>len(timetable[i])):
+        if(max_len<len(timetable[i])):
             result = []
             result.append(i)
-            min_len = len(timetable[i])
-        elif min_len == len(timetable[i]):
+            max_len = len(timetable[i])
+        elif max_len == len(timetable[i]):
             result.append(i)
     return result

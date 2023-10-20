@@ -1,0 +1,86 @@
+hr{
+    border: 0.1rem solid;
+    width:80%;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    color: #466FFF  ;
+}
+#title-wrap {
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    font-weight: bolder;
+    font-size: 2.5rem;
+    text-align: center;
+    margin:0
+}
+
+#choice-wrap {
+    width: 100%;
+    height: 10%;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.choice {
+    position: relative;
+    border: 1px solid #466FFF;
+    border-radius: 30px;
+    width: 30%;
+    height: 80%;
+    background-color: #466FFF;
+    text-align: center;
+    margin-left: 5%;
+    margin-right: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size:1.5rem;
+    color: white;
+    cursor: pointer;
+}
+
+#list-wrap {
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: scroll;
+}
+
+.list {
+    position: relative;
+    border: 0.1rem solid #466FFF;
+    border-radius: 30px;
+    width: 80%;
+    height: 15%;
+    background-color: white;
+    text-align: center;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-bottom : 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    color: #466FFF;
+    cursor: pointer;
+}
+
+.groupName{
+    font-weight: bolder;
+    font-size:2rem;
+    margin-left:6rem;
+}
+.groupDate{
+    font-size:1rem;
+    margin-right:6rem;
+}

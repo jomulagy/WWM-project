@@ -1,0 +1,41 @@
+<!-- mypage -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>언제 어디서 만나</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base1.css' %}" />
+    {% block css %}
+    {% endblock %}
+
+</head>
+<body>
+    <div class="topBar">
+        <div class="mainLogo" onclick = "location.href = '/'">
+            <img src="{% static 'img/MainLogo.png' %}">
+        </div>
+        <div class="profile">
+            {%  if request.user.is_authenticated %}
+                <div id = "userInfo" onclick = "location.href = '/'">
+                    <img id = "userProfile" src="{% static 'img/profile img.png' %}">
+                    <p class="userName" href="/auth/logout">{{ user.first_name }} 님</p>
+                </div>
+                
+                <a href="/auth/logout" >로그아웃</a>
+            {% else %}
+                <a href="/accounts/login/" >로그인</a>
+            {% endif %}
+
+        </div>
+    </div>
+    <div class="content-wrap">
+        {% block content %}
+        {% endblock %}
+    </div>
+    
+    {% block js %}
+    {% endblock %}
+</body>

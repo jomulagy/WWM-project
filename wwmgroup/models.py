@@ -25,4 +25,6 @@ class WwmGroup(models.Model):
         self.avaliablity_days_time = {(self.enddate - self.startdate) * 24} * "0"
         return self.avaliablity_days_time
 
-
+class Invite(models.Model):
+    email = models.CharField(max_length = 100)
+    group = models.ForeignKey(WwmGroup,on_delete = models.CASCADE)

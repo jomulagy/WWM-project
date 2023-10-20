@@ -44,7 +44,7 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["port-0-wwm-project-13082024l70nufe3.gksl1.cloudtype.app"]
+ALLOWED_HOSTS = ["*"]
 
 
 
@@ -83,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 X_FRAME_OPTIONS = 'ALLOWALL'
@@ -121,15 +122,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # engine: mysql
-        'NAME' : 'wwmdb', # DB Name
-        'USER' : 'admin', # DB User
-        'PASSWORD' : 'qwer1234!', # Password
-        'HOST': 'wwm-db.c7gdpewqzikb.us-east-2.rds.amazonaws.com', # 생성한 데이터베이스 엔드포인트
-        'PORT': '3306', # 데이터베이스 포트
-        'OPTIONS':{
-            'init_command' : "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -202,6 +196,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/accounts/my_home'  # 로그인 후 리다이렉트 될 경로
+LOGIN_REDIRECT_URL = '/'  # 로그인 후 리다이렉트 될 경로
 
 ACCOUNT_LOGOUT_ON_GET = True

@@ -1,11 +1,97 @@
-html,body {
-        height: 100%;
-        display: flex;
-        flex-flow: column;
-        margin: 0;
-        text-align: center;
+#calander-wrap{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    margin-left : 25%;
+    height:50%;
 }
 
+#date-area{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+}
+.btn-area{
+    display: grid;
+    width:10%;
+    cursor: pointer;
+}
+
+.btn{
+    font-size:2rem;
+}
+#btn-left{
+    justify-self: end;
+}
+#month-year{
+    width: 80%;;
+}
+
+table {
+    border-collapse: collapse;
+    width: 90%;
+}
+table, th, td {
+    border: 0px;
+    text-align: center;
+    
+}
+tr{
+    width:100%;
+}
+th, td {
+    width:2rem;
+    height:3rem;
+}
+
+td{
+    cursor:pointer;
+}
+td>div:hover{
+    font-weight: bold;
+    color:#466FFF;
+}
+
+td > div{
+    width:70%;
+    height:100%;
+    margin-left:15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.weekend{
+    color:red;
+}
+.startDate{
+    background-color: #466FFF;
+    border-top-left-radius:1rem;
+    border-bottom-left-radius:1rem;
+    color:white;
+}
+.endDate{
+    background-color: #466FFF;
+    border-top-right-radius:1rem;
+    border-bottom-right-radius:1rem;
+    color:white;
+}
+.hovered{
+    background-color:aquamarine;
+}
+td > div.startDate:hover, td > div.endDate:hover{
+    color: white;
+}
+
+.container {
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top:3rem;
+}
 .show {
     display: block !important;
 }
@@ -27,34 +113,47 @@ html,body {
 }
 
 .hiddenbox {
-    margin-top: 38%;
-    text-align: center;
-    margin-left: 46.5%;
-}
-
-.groupbox {
     display: none;
-    position: absolute;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width:40rem;
+    height: 20rem;
     border : 1px solid #FFFFFFFF;
     background-color: white;
     border-radius : 20px;
-    width: 500px;
-    height: 400px;
     box-shadow: 4px 4px 4px 4px grey;
-    transform: translate(-38%, -120%);
+    
 }
 
+.hiddenbox > form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+    height: 100%;
+}
 .groupName {
-    margin-top: 35%;
+    position:relative;
+    width:90%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 
-#input1 {
-    text-align: center;
-    width: 90%;
-    height: 40px;
+.groupName > input{
+    width:100%;
+    height: 20%;
     background-color: #E1E1E3;
     border : 1px solid #E1E1E3;
     border-radius : 5px;
+    text-align: center;
 
 }
 /* header {
@@ -157,9 +256,7 @@ h2 {
 /* REMOVE SECOND CALENDAR */
 
 
-.container {
-    margin-left: 43%;
-}
+
 /* 
 .makeRoom {
     margin : 20px; 
@@ -176,15 +273,15 @@ h2 {
     text-align: center;
     font-size: 1em;
     color: #DB615C;
-    transform: translate(0%, 55%);
+    margin:0;
 } 
 
 .Room2 {
     font-weight: bolder;
     text-align: center;
-    font-size: 1.75em;
+    font-size: 1em;
     color: #DB615C;
-    transform: translate(0%, 60%);
+    margin:0;
 } 
 
 .makeRoom {
@@ -194,18 +291,30 @@ h2 {
     background-color: #FFC7BD;
     width: 26%;
     height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+#sb-area{
+    width: 90%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 .makeRoom2 {
-    margin-top: 20%;
-    margin-left: 28%;
     cursor: pointer;
     text-align: center;
     border-radius : 60px;
     background-color: #FFC7BD;
-    width: 42%;
-    height: 70px;
-
+    width: 50%;
+    height:30%;
+    margin-bottom: 5%;
+    margin-left: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .makeRoom:hover {
     background-color: #f7c1b7;
@@ -245,3 +354,4 @@ footer {
     display: inline-block;
     margin-left: 20px;
   }
+ 

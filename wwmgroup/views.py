@@ -1,21 +1,35 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 
 from accounts.views import login
 from accounts.models import User
 from wwmgroup.forms import groupForm
-from wwmgroup.models import WwmGroup
+from .models import *
+from .utils import *
 
 import base64
 import codecs
 import uuid
+import json
+
 
 def final_result(request, group_pk):
-    group = get_object_or_404(WwmGroup, pk=group_pk)
-    user = get_object_or_404(User, pk=request.user.id)
-    if group.user.get(email=user.email):
-        return render(request, 'wwmgroup/final_result.html', context={'group_pk':group_pk})
+    user = request.user
+    if request.user.is_authenticated:
+        group = get_object_or_404(WwmGroup, pk=group_pk)
+        if Invite.objects.filter(email=request.user.email, group=group).exists():
+            group.user.add(request.user)
+            group.save()
+            invite = Invite.objects.get(email=request.user.email, group=group)
+            invite.delete()
+        elif not group.user.filter(email=user.email).exists():
+            return HttpResponseBadRequest('잘못된 요청입니다.')
+
+        return render(request, 'wwmgroup/final_result.html', context={'group_pk': group_pk})
     else:
-        return render(request, 'wwmgroup/failconnect.html')
+        return redirect("accounts:login")
+
 
 # 1. 그룹 생성하는 view,
 # - 생성하는 순간 그룹장.그룹 고유 url 만든다.
@@ -23,18 +37,18 @@ def final_result(request, group_pk):
 
 def groupcreate(request):
     user = get_object_or_404(User, pk=request.user.id)
-    #user = get_object_or_404(User,pk='1') # test용 !
+    # user = get_object_or_404(User,pk='1') # test용 !
 
     # 유저 아이디 받아옴.
     if request.method == 'POST':
         group = WwmGroup.objects.create(leader_email=request.user.email, wwmgroupurl=generate_random_slug_code(8))
-        #group = WwmGroup.objects.create(leader_email='asdasd@naver.com', wwmgroupurl=generate_random_slug_code(8))
+        # group = WwmGroup.objects.create(leader_email='asdasd@naver.com', wwmgroupurl=generate_random_slug_code(8))
         form = groupForm(request.POST, instance=group)
         group.user.add(user)
         if form.is_valid():
             group = form.save()
             group.save()
-            return redirect(f'wwmgroup/{group.pk}')#그룹 만들고 어디로 이동할지
+            return redirect("final_result", group.pk)  # 그룹 만들고 어디로 이동할지
     else:
         user = get_object_or_404(User, pk=request.user.id)
         form = groupForm()
@@ -100,23 +114,68 @@ def joingroup(request, group_url):
     else:
         return render(request, '그룹에 가입 되어있지 않음.html')"""
 
+
 def leavegroup(request, group_url):
-    group = get_object_or_404(WwmGroup, wwmgroupurl = group_url)
+    group = get_object_or_404(WwmGroup, wwmgroupurl=group_url)
     user = get_object_or_404(User, pk=request.user.id)
     group.user.remove(user)
-    return redirect('/accounts/my_home')
+    return redirect('/')
 
 
 def generate_random_slug_code(length):
-        """
-    generates random code of given length
     """
-        return base64.urlsafe_b64encode(
-            codecs.encode(uuid.uuid4().bytes, "base64").rstrip()
-        ).decode()[:length]
+generates random code of given length
+"""
+    return base64.urlsafe_b64encode(
+        codecs.encode(uuid.uuid4().bytes, "base64").rstrip()
+    ).decode()[:length]
 
-def group_test(request) :
-    return render(request,'whenmeet/datepicker.html')
 
-def input_address(request,pk) :
-    return render(request,'wheremeet/coordinate_save.html',{'pk':pk})
+def group_test(request):
+    return render(request, 'whenmeet/datepicker.html')
+
+
+def input_address(request, pk):
+    return render(request, 'wheremeet/coordinate_save.html', {'pk': pk})
+
+
+@csrf_exempt
+def invite(request):
+    if request.method == "POST":
+        req = json.loads(request.body)
+        email = req.get("email")
+        pk = req.get("id")
+        group = WwmGroup.objects.get(id=pk)
+        send_email(email, pk)
+        invite = Invite(group=group, email=email)
+        invite.save()
+        return JsonResponse(status=200, data={"message": "success"})
+    else:
+        return JsonResponse(status=405, data={"message": "Method Not Allowed"})
+
+@csrf_exempt
+def members(request):
+    if request.method == "POST":
+        print(request.body)
+        req = json.loads(request.body)
+        res = {
+            "members" : []
+        }
+
+        id = req.get("id")
+        group = WwmGroup.objects.get(id = id)
+        members = group.user.all()
+
+        for D in members:
+            if D.email == group.leader_email:
+                continue
+            user = D
+            member = {
+                "username" : user.username,
+                "name" : user.last_name + user.first_name
+            }
+            res["members"].append(member)
+
+        return JsonResponse(status = 200,data = res)
+    else:
+        return JsonResponse(status = 405, data = {})

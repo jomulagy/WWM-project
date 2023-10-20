@@ -1,54 +1,54 @@
-from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import User
-from wwmgroup.models import WwmGroup
-from .forms import UserForm
+from wwmgroup.models import WwmGroup,Invite
+
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from .forms import RegisterForm
 
-
-def home(request):
-    return render(request,"accounts/main_page.html")
+import json
 
 # 그룹리스트 전달하는 뷰
 # 유저가 속한 그룹들 찾기 - 그룹 이름, 그룹원 출력
+@csrf_exempt
 def user_grouplist(request):
-    group_list = list(WwmGroup.objects.filter(user=request.user))
-    user_list = []
-    for group in group_list:
-        user_list.append(list(group.user.all()))
-
-    my_list = zip(group_list,user_list)
-
-    if group_list is not None:
-        # 그룹 이름과 그룸원 출력 
-        return render(request, 'accounts/my_page.html',{'my_list':my_list})
+    if request.method == "GET":
+        return render(request,"wwmgroup/list.html")
     else:
-        return redirect('/')
+        req = json.loads(request.body)
+        res = {
+            "groups" : []
+        }
+        user = request.user
 
+        #내 그룹
+        if req["type"] == "myGroup":
+            queries = WwmGroup.objects.filter(user = user)
+            for query in queries:
+                e = {}
+                group = query
+                print(group)
+                e["name"] = group.groupname
+                e["startDate"] = group.startdate
+                e["endDate"] = group.enddate
 
-# 개인 타임 테이블 저장하는 뷰 
-# request method post시 user avaliablity_days_time 필드에 저장하는 뷰 
-def save_personal_timetable(request):
-    user = User.objects.get(id='1')
-    if request.method == 'POST':
-        timetable = UserForm(request.POST)
-        if timetable.is_valid():
-            user.avaliablity_days_time = timetable.save()
-            return render(request, 'test.html')
-    else:
-        avaliablity_days_time = UserForm()
-        return render(request, 'test.html', {'avaliablity_days_time': avaliablity_days_time})
+                res["groups"].append(e)
 
+        # 초대받은 그룹
+        else:
+            email = user.email
+            queries = Invite.objects.filter(email = email)
+            for query in queries:
+                e = {}
+                group = query.group
 
-# user avaliablity_days_time 수정하는 뷰
-def edit_personal_timetable(request):
-    avaliablity_days_time = get_object_or_404(User.avaliablity_days_time, pk=request.user.id)
-    if request.method == 'POST':
-        new_timetable = UserForm(request.POST, instance=avaliablity_days_time)
-        if new_timetable.is_valid():
-            avaliablity_days_time = new_timetable.save()
-            return redirect('test.html')
+                e["name"] = group.groupname
+                e["startDate"] = group.startdate
+                e["endDate"] = group.enddate
 
+                res["groups"].append(e)
+        return JsonResponse(status = 200,data = res)
 
 # user avaliablity_days_time 조회하는 뷰 (시작일을 name = startdate 로 받아야됨)
 def post_personal_timetable(request):
@@ -85,5 +85,8 @@ def login(request):
         return render(request, 'accounts/login.html', {'form': form})
 
 # 마이페이지 처음 화면
-def my_home(request) :
-    return render(request ,'accounts/home.html')
+def home(request) :
+    if request.user.is_authenticated:
+        return render(request ,'accounts/home.html')
+    else:
+        return render(request,"accounts/main_page.html")

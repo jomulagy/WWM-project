@@ -73,27 +73,6 @@ outModal.addEventListener('click', () => {
   modal.style.display = 'block';
 });
 
-var whichBtn = 0;
-
-//모달에서 나가기
-document.querySelector("#modal_closedbtn").addEventListener("click", function() {
-  $(".modal").hide();
-  document.querySelector(".total").classList.toggle("blur");
-});
-
-//예 누르기
-document.querySelector("#modal_Yesbtn").addEventListener("click", function() {
-  $(".modal").hide();
-  document.querySelector(".total").classList.toggle("blur");
-  if (whichBtn == 1) {
-    console.log("추방");
-  } else if (whichBtn == 2) {
-    console.log("초대");
-  } else {
-    console.log("양도");
-  }
-});
-
 //그룹원 추방 버튼을 눌렀을 때
 document.querySelector("#out-btn").addEventListener("click", function() {
 
@@ -111,10 +90,8 @@ document.querySelector("#out-btn").addEventListener("click", function() {
 
 //초대 버튼을 눌렀을 때
 document.querySelector("#invite-btn").addEventListener("click", function() {
-  $(".modal").show();
+  $("#invite-modal").css("display","flex");
   document.querySelector(".total").classList.toggle("blur");
-  document.getElementById("modal_text").innerHTML = "그륩원에 새로 초대하시겠습니까?";
-  whichBtn = 2;
 });
 
 //양도 버튼을 눌렀을 때

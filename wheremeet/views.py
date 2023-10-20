@@ -3,6 +3,7 @@ import math
 from django.http import JsonResponse
 from django.shortcuts import render
 import pandas as pd
+from django.views.decorators.csrf import csrf_exempt
 
 from wwmgroup.models import WwmGroup
 
@@ -21,7 +22,8 @@ def main(reqeust, group_pk):
 
 # 참고 로직: https://coding-god.tistory.com/72
 
-# 1. 프론트엔드에서 그룹원별 위치 정보(위도, 경도) 받는 함수  
+# 1. 프론트엔드에서 그룹원별 위치 정보(위도, 경도) 받는 함수
+@csrf_exempt
 def save_coordinate(request):
     
     if request.method == 'POST':
@@ -53,7 +55,15 @@ def wheremeet_result(request, group_pk):
     user_list = wwmgroup.user.all()
 
     user_count = len([user for user in wwmgroup.user.all()])
-    user_coors = list(wwmgroup.user.all().values('name', 'latitude', 'longitude'))
+
+    user_coors = []
+    users = wwmgroup.user.all()
+    for user in users:
+        data = {}
+        data["name"] = user.last_name + user.first_name
+        data["latitude"] = user.latitude
+        data["longitude"] = user.longitude
+        user_coors.append(data)
 
     latitude, longitude = cal_center(user_list)
 

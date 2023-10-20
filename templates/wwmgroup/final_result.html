@@ -1,90 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+{% extends 'base.html' %}
+{% load static %}
 
-    <script type="text/javascript">
-      function change_wheremeet() {
-        // 토글 할 버튼 선택 (btn1)
-        const wheremeet = document.getElementById("wheremeet_display");
-        const whenmeet = document.getElementById("whenmeet_display");
+{% block css %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/final_result.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/whenmeet/index.css' %}" />
+{% endblock %}
 
-        // btn1 숨기기 (display: none)
-        if (wheremeet.style.display !== "none") {
-          wheremeet.style.display = "none";
-          whenmeet.style.display = "block";
-        }
-        // btn` 보이기 (display: block)
-        else {
-          wheremeet.style.display = "block";
-          whenmeet_display.style.display = "none";
-        }
-      }
 
-      function change_wheremmet() {
-        // 토글 할 버튼 선택 (btn1)
-        const wheremeet = document.getElementById("wheremeet_display");
-        const whenmeet = document.getElementById("whenmeet_display");
 
-        // btn1 숨기기 (display: none)
-        if (whenmeet.style.display !== "none") {
-          whenmeet.style.display = "none";
-          wheremeet.style.display = "block";
-        }
-        // btn` 보이기 (display: block)
-        else {
-          whenmeet.style.display = "block";
-          wheremeet.style.display = "none";
-        }
-      }
-    </script>
-  </head>
+{% block content %}
+<div id = "btn-wrap">
+  <button class="button" onclick="change_wheremeet()">When/Where</button>
+</div>
+<div id = "center-wrap">
+  <center>
+    <iframe
+      id="whenmeet_display"
+      width="1240"
+      height="1500"
+      src="{% url 'get_group_timetable' group_pk %}"
+      name="wheremeet"
+    ></iframe>
+    <iframe
+      id="wheremeet_display"
+      width="1240"
+      height="1500"
+      style="display: none"
+      src="{% url 'wheremeet:main' group_pk %}"
+      name="whenmeet"
+    ></iframe>
+  </center>
+</div>
+<div class="btns">
+  {% if user.email == laeder_email %}
+    <button id="invite-btn">그룹원 초대</button>
+    <button id="transfer-btn">방장 양도</button>
+  {% else %}
+  <button id="out-btn" onclick="parent.location.href='http://127.0.0.1:8000/wwmgroup/{{wwmgroupurl}}/leave'">그룹 나가기</button>
+  {% endif %}
+</div>
+
+</div>
+<div id="invite-modal" class="modal-area">
+<div class="modal">
+  <p class="modal-text">이메일</p>
+  <input id="email" class="modal-input" type="text">
+</div>
+<div id="mail-btn" class="final-btn">
+  <p class = "final-text">초대 메일 보내기</p>
+</div>
+</div>
+
+<div id="transfer-modal" class="modal-area">
+
+<div class="modal">
+  <p class="modal-text">그룹원 선택</p>
+  <div id = "transfer-member-wrap">
+  </div>
+</div>
+<div id="transfer-submit" class="final-btn">
+  <p id = "transfer-submit-text"class = "final-text">양도</p>
+</div>
+</div>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/final_result.js' %}"></script>
+  <script src="{% static 'js/whenmeet/index.js' %}"></script>
+{% endblock %}
+
   <body>
-    <button class="button" onclick="change_wheremeet()">When/Where</button>
-    <center>
-      <iframe
-        id="whenmeet_display"
-        width="1240"
-        height="1500"
-        src="{% url 'get_group_timetable' group_pk %}"
-        name="wheremeet"
-      ></iframe>
-      <iframe
-        id="wheremeet_display"
-        width="1240"
-        height="1500"
-        style="display: none"
-        src="{% url 'wheremeet-result' group_pk %}"
-        name="whenmeet"
-      ></iframe>
-    </center>
-    <!-- <button class="button" onclick="change_wheremeet()">이후</button> -->
 
-    <style>
-      .button {
-        background-color: blue;
-
-        border: none;
-
-        color: white;
-
-        /* padding: 15px 30px; */
-
-        text-align: center;
-
-        text-decoration: none;
-
-        display: inline-block;
-
-        font-size: 16px;
-
-        margin: 4px 2px;
-
-        cursor: pointer;
-      }
-    </style>
   </body>
 </html>

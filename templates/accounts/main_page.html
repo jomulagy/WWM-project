@@ -1,35 +1,25 @@
-{% extends 'accounts/base1.html' %}
-
 {% load static %}
-{% block content %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>언제 어디서 만나</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>introduce</title>
-    <style>
-        img {
-         position:relative;
-         max-width: 100%;
-         display: block; 
-         margin: 0px auto;
-        }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}" />
 
-        .btn1{
-            position:relative;
-
-        }
-
-    </style>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
 </head>
 <body>
+    <div class="header">
+        <div class="mainLogo">
+            <img src="{% static 'img/MainLogo.png' %}">
+        </div>
+    </div>
+
     <div class="main_1">
         <img src="{% static 'img/main_1.png'%}">
-            <div style ="text-align:center;">
+            <div id = "footer">
                 <!-- <button class='btn1' type="button" 
                     style="color:white;
                     background-color:#466FFF;
@@ -44,9 +34,7 @@
              {% endif %}
             </div>
     </div>
-
+    
     <script src="{% static 'js/login.js' %}"></script>
 </body>
-</html>
 
-{%endblock%}
