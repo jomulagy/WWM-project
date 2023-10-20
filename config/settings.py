@@ -44,10 +44,10 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1',"wwmeet.shop"]
-CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:8000'
+ALLOWED_HOSTS = ['localhost',"wwmeet.shop"]
+CORS_ALLOWED_ORIGINS = ['localhost'
                          ,'https://wwmeet.shop']
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000'
+CORS_ORIGIN_WHITELIST = ['localhost'
                          ,'https://wwmeet.shop']
 CORS_ALLOW_CREDENTIALS = True
 
